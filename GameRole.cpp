@@ -69,6 +69,18 @@ GameMsg* GameRole::CreateIDNameLogoff()
     return Login_Msg;
 }
 
+GameMsg* GameRole::CreateTalkBroadCast(std::string _content)
+{
+    pb::BroadCast* Chatinfo = new pb::BroadCast();
+    Chatinfo->set_pid(Pid);
+    Chatinfo->set_username(Player_Name);
+    Chatinfo->set_pid(1);//1就是聊天
+    Chatinfo->set_content(_content);
+
+    GameMsg* ChatMsg = new GameMsg(GameMsg::MSG_TYPE_BROADCAST, Chatinfo);
+    return ChatMsg;
+}
+
 GameRole::GameRole()
 {
     x = 100; 
@@ -119,6 +131,27 @@ bool GameRole::Init()
 
 UserData* GameRole::ProcMsg(UserData& _poUserData)
 {
+    GET_REF2DATA(MultiMsg, recvMsg, _poUserData);
+    for (auto single : recvMsg.m_Msg)
+    {
+        if (single->enMsgType == GameMsg::MSG_TYPE_CHAT_CONTENT)
+        {
+            std::cout << "type is" << single->enMsgType << std::endl;
+            std::cout << single->pMsg->Utf8DebugString() << std::endl;
+
+            std::string content = dynamic_cast<pb::Talk*>(single->pMsg)->content();
+            auto role_List = ZinxKernel::Zinx_GetAllRole();
+            for (auto singleRole: role_List)
+            {
+                auto chatMsg = CreateTalkBroadCast(content);
+                auto curRole = dynamic_cast<GameRole*>(singleRole);
+                ZinxKernel::Zinx_SendOut(*chatMsg, *(curRole->Ro_proto));
+            }
+           
+        }
+    }
+    
+
     //测试proto处理的数据是否发给role
    /* GET_REF2DATA(MultiMsg, Mesg, _poUserData);
     for (auto task : Mesg.m_Msg)

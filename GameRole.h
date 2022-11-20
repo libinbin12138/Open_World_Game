@@ -19,6 +19,8 @@ class GameRole :
     GameMsg* CreateRoundPlayer();
     GameMsg* CreateSelfInfo();
     GameMsg* CreateIDNameLogoff();
+
+    GameMsg* CreateTalkBroadCast(std::string _content);//адлЛ
 public:
     GameRole();
     virtual ~GameRole();

@@ -15,6 +15,7 @@ GameProto::~GameProto()
     {
         ZinxKernel::Zinx_Del_Role(*Pr_role);
         delete Pr_role;
+        //析构完成以后，角色才会从框架中摘除并且删掉。
     }
 }
 

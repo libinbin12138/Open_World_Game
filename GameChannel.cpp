@@ -8,6 +8,7 @@ GameChannel::GameChannel(int fd)
 }
 GameChannel::~GameChannel()
 {
+	
 	if (NULL != ch_proto)
 	{
 		ZinxKernel::Zinx_Del_Proto(*ch_proto);

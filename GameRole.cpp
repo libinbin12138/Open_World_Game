@@ -17,6 +17,58 @@ GameMsg* GameRole::CreateIDNameLogin()
     return Login_Msg;
 }
 
+GameMsg* GameRole::CreateRoundPlayer()
+{
+    pb::SyncPlayers* pRound = new pb::SyncPlayers();
+    auto round_list = world.GetRoundPlayer(this);
+    for (auto single : round_list)
+    {
+        auto pPlayer = pRound->add_ps();
+        auto pcurRole = dynamic_cast<GameRole*> (single);
+
+        pPlayer->set_username(pcurRole->Player_Name);
+        pPlayer->set_pid(pcurRole->Pid);
+
+        auto pPosition = pPlayer->mutable_p();
+        pPosition->set_x(pcurRole->x);
+        pPosition->set_y(pcurRole->y);
+        pPosition->set_z(pcurRole->z);
+        pPosition->set_v(pcurRole->v);
+    }
+
+    GameMsg* RoundP_MSA = new GameMsg(GameMsg::MSG_TYPE_SRD_POSTION, pRound);
+    return RoundP_MSA;
+}
+
+GameMsg* GameRole::CreateSelfInfo()
+{
+    pb::BroadCast* pSelf = new pb::BroadCast();
+
+    pSelf->set_pid(Pid);
+    pSelf->set_tp(2);//和客户端对应，2就是发送自己的消息给自己
+    pSelf->set_username(Player_Name);
+
+    auto pPosition =pSelf->mutable_p();
+    pPosition->set_x(x);
+    pPosition->set_y(y);
+    pPosition->set_z(z);
+    pPosition->set_v(v);
+
+    GameMsg* SelfMsg = new GameMsg(GameMsg::MSG_TYPE_BROADCAST, pSelf);
+
+    return SelfMsg;
+}
+
+GameMsg* GameRole::CreateIDNameLogoff()
+{
+    pb::SyncPid* pSync = new pb::SyncPid();
+    pSync->set_pid(Pid);
+    pSync->set_username(Player_Name);
+
+    GameMsg* Login_Msg = new GameMsg(GameMsg::MSG_TYPE_LOGOFF_ID_NAME, pSync);
+    return Login_Msg;
+}
+
 GameRole::GameRole()
 {
     x = 100; 
@@ -42,8 +94,23 @@ bool GameRole::Init()
 
     if (returnValue == true)
     {
-        auto loginMsg = CreateIDNameLogin();
-        ZinxKernel::Zinx_SendOut(*loginMsg,*Ro_proto);
+        /*向自己发送ID和名称(显示自己的信息)*/
+        auto pmsg = CreateIDNameLogin();
+        ZinxKernel::Zinx_SendOut(*pmsg,*Ro_proto);
+
+        /*向自己发送周围玩家的位置*/
+        pmsg = CreateRoundPlayer();
+        ZinxKernel::Zinx_SendOut(*pmsg, *Ro_proto);
+
+        /*向周围玩家发送自己的位置*/
+        auto srd_list = world.GetRoundPlayer(this);
+        for (auto singlePlayer : srd_list)
+        {
+            pmsg = CreateSelfInfo();
+            auto cur_player = dynamic_cast<GameRole*>(singlePlayer);
+            ZinxKernel::Zinx_SendOut(*pmsg, *(cur_player->Ro_proto));
+        }
+
     }
 
 
@@ -64,6 +131,13 @@ UserData* GameRole::ProcMsg(UserData& _poUserData)
 
 void GameRole::Fini()
 {
+    auto RoundP_List = world.GetRoundPlayer(this);
+    for (auto singlePlayer : RoundP_List)
+    {
+        auto pMsg =CreateIDNameLogoff();
+        auto curPlayer = dynamic_cast<GameRole*>(singlePlayer);
+        ZinxKernel::Zinx_SendOut(*pMsg, *(curPlayer->Ro_proto));
+    }
     world.DelPlayers(this);
 }
 

@@ -16,7 +16,9 @@ class GameRole :
     std::string Player_Name;
 
     GameMsg* CreateIDNameLogin();
-
+    GameMsg* CreateRoundPlayer();
+    GameMsg* CreateSelfInfo();
+    GameMsg* CreateIDNameLogoff();
 public:
     GameRole();
     virtual ~GameRole();

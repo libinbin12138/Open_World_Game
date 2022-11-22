@@ -1,4 +1,4 @@
-#include "GameRole.h"
+ï»¿#include "GameRole.h"
 #include"GameMsg.h"
 #include"GameProto.h"
 #include"msg.pb.h"
@@ -45,7 +45,7 @@ GameMsg* GameRole::CreateSelfInfo()
     pb::BroadCast* pSelf = new pb::BroadCast();
 
     pSelf->set_pid(Pid);
-    pSelf->set_tp(2);//ºÍ¿Í»§¶Ë¶ÔÓ¦£¬2¾ÍÊÇ·¢ËÍ×Ô¼ºµÄÏûÏ¢¸ø×Ô¼º
+    pSelf->set_tp(2);//å’Œå®¢æˆ·ç«¯å¯¹åº”ï¼Œ2å°±æ˜¯å‘é€è‡ªå·±çš„æ¶ˆæ¯ç»™è‡ªå·±
     pSelf->set_username(Player_Name);
 
     auto pPosition =pSelf->mutable_p();
@@ -74,7 +74,7 @@ GameMsg* GameRole::CreateTalkBroadCast(std::string _content)
     pb::BroadCast* Chatinfo = new pb::BroadCast();
     Chatinfo->set_pid(Pid);
     Chatinfo->set_username(Player_Name);
-    Chatinfo->set_pid(1);//1¾ÍÊÇÁÄÌì
+    Chatinfo->set_tp(1);//1å°±æ˜¯èŠå¤©
     Chatinfo->set_content(_content);
 
     GameMsg* ChatMsg = new GameMsg(GameMsg::MSG_TYPE_BROADCAST, Chatinfo);
@@ -94,27 +94,27 @@ GameRole::~GameRole()
 
 bool GameRole::Init()
 {
-    /*ÉèÖÃÍæ¼ÒIDÎªµ±Ç°Á¬½ÓµÄfd*/
-    //ÓÉgetfdÀ´ÊµÏÖidµÄÎ¨Ò»ĞÔ
-    //²»ÄÜÔÚ¹¹Ôìº¯ÊıÖĞ³õÊ¼»°£¬ÒòÎªÄÇÀï»¹Ã»ÓĞÁ¬½ÓRo_proto        
+    /*è®¾ç½®ç©å®¶IDä¸ºå½“å‰è¿æ¥çš„fd*/
+    //ç”±getfdæ¥å®ç°idçš„å”¯ä¸€æ€§
+    //ä¸èƒ½åœ¨æ„é€ å‡½æ•°ä¸­åˆå§‹è¯ï¼Œå› ä¸ºé‚£é‡Œè¿˜æ²¡æœ‰è¿æ¥Ro_proto        
     Pid = this->Ro_proto->m_channel->GetFd();
 
     bool returnValue = false;
 
-    //°Ñ×Ô¼ºÕâ¸öroleÌí¼Óµ½worldÖĞ
+    //æŠŠè‡ªå·±è¿™ä¸ªroleæ·»åŠ åˆ°worldä¸­
     returnValue = world.AddPlayerS(this);
 
     if (returnValue == true)
     {
-        /*Ïò×Ô¼º·¢ËÍIDºÍÃû³Æ(ÏÔÊ¾×Ô¼ºµÄĞÅÏ¢)*/
+        /*å‘è‡ªå·±å‘é€IDå’Œåç§°(æ˜¾ç¤ºè‡ªå·±çš„ä¿¡æ¯)*/
         auto pmsg = CreateIDNameLogin();
         ZinxKernel::Zinx_SendOut(*pmsg,*Ro_proto);
 
-        /*Ïò×Ô¼º·¢ËÍÖÜÎ§Íæ¼ÒµÄÎ»ÖÃ*/
+        /*å‘è‡ªå·±å‘é€å‘¨å›´ç©å®¶çš„ä½ç½®*/
         pmsg = CreateRoundPlayer();
         ZinxKernel::Zinx_SendOut(*pmsg, *Ro_proto);
 
-        /*ÏòÖÜÎ§Íæ¼Ò·¢ËÍ×Ô¼ºµÄÎ»ÖÃ*/
+        /*å‘å‘¨å›´ç©å®¶å‘é€è‡ªå·±çš„ä½ç½®*/
         auto srd_list = world.GetRoundPlayer(this);
         for (auto singlePlayer : srd_list)
         {
@@ -136,23 +136,45 @@ UserData* GameRole::ProcMsg(UserData& _poUserData)
     {
         if (single->enMsgType == GameMsg::MSG_TYPE_CHAT_CONTENT)
         {
-            std::cout << "type is" << single->enMsgType << std::endl;
+            std::cout << "æ¥æ”¶åˆ°çš„æ¶ˆæ¯idæ˜¯" << single->enMsgType << std::endl;
             std::cout << single->pMsg->Utf8DebugString() << std::endl;
 
             std::string content = dynamic_cast<pb::Talk*>(single->pMsg)->content();
             auto role_List = ZinxKernel::Zinx_GetAllRole();
-            for (auto singleRole: role_List)
+           
+            for (auto singleRole : role_List)
             {
-                auto chatMsg = CreateTalkBroadCast(content);
+                auto chatMsg = CreateTalkBroadCast(content);//ä¸æ‡‚è¿™é‡Œä¸ºå•¥å¾ªç¯é‡Œå¤–ä¸ä¸€æ ·ã€‚ã€‚ã€‚
+                printf("1address of pointer is: 0x%0X\n", &chatMsg);
+
                 auto curRole = dynamic_cast<GameRole*>(singleRole);
                 ZinxKernel::Zinx_SendOut(*chatMsg, *(curRole->Ro_proto));
+                printf("3address of pointer is: 0x%0X\n", &chatMsg);
             }
-           
+
+        }
+        if (single->enMsgType == GameMsg::MSG_TYPE_NEW_POSTION)
+        {          
+            auto newpos = dynamic_cast<pb::Position*>(single->pMsg);
+            auto role_List = world.GetRoundPlayer(this);
+            for (auto singleRole : role_List)
+            {
+                pb::BroadCast* NewPosition = new pb::BroadCast();
+                NewPosition->set_pid(Pid);
+                NewPosition->set_username(Player_Name);
+                NewPosition->set_tp(4);
+                auto pPosition = NewPosition->mutable_p();;
+                pPosition->set_x(newpos->x());
+                pPosition->set_y(newpos->y());
+                pPosition->set_z(newpos->z());
+                pPosition->set_v(newpos->v());
+                auto curRole = dynamic_cast<GameRole*>(singleRole);
+                ZinxKernel::Zinx_SendOut(*(new GameMsg(GameMsg::MSG_TYPE_BROADCAST, NewPosition)), *(curRole->Ro_proto));
+            }
         }
     }
-    
 
-    //²âÊÔproto´¦ÀíµÄÊı¾İÊÇ·ñ·¢¸ørole
+    //æµ‹è¯•protoå¤„ç†çš„æ•°æ®æ˜¯å¦å‘ç»™role
    /* GET_REF2DATA(MultiMsg, Mesg, _poUserData);
     for (auto task : Mesg.m_Msg)
     {

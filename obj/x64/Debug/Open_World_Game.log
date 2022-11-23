@@ -1,0 +1,49 @@
+﻿  正在验证源
+  正在将源远程复制到“192.168.182.138”
+  正在验证体系结构
+  正在验证体系结构
+  正在启动远程生成
+  正在编译源:
+  AOIWorld.cpp
+  GameChannel.cpp
+  GameMsg.cpp
+E:\桌面\Open_World_Game\GameMsg.h(18,4): warning : ‘GameMsg::enMsgType’ will be initialized after [-Wreorder]
+E:\桌面\Open_World_Game\GameMsg.h(18,4): warning :   } enMsgType;
+E:\桌面\Open_World_Game\GameMsg.h(18,4): warning :     ^~~~~~~~~
+E:\桌面\Open_World_Game\GameMsg.cpp(4,1): warning : when initialized here [-Wreorder]
+  GameProto.cpp
+E:\桌面\Open_World_Game\GameProto.cpp(46,31): warning : comparison between signed and unsigned integer expressions [-Wsign-compare]
+E:\桌面\Open_World_Game\GameProto.cpp(46,31): warning :          if (szLast.size() - 8 < iLength)
+E:\桌面\Open_World_Game\GameProto.cpp(46,31): warning :              ~~~~~~~~~~~~~~~~~~^~~~~~~~~
+E:\桌面\Open_World_Game\GameProto.cpp(77,30): warning : conversion to ‘int’ from ‘std::__cxx11::basic_string<char>::size_type {aka long unsigned int}’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(77,30): warning :      length = MsgContemnt.size();
+E:\桌面\Open_World_Game\GameProto.cpp(77,30): warning :               ~~~~~~~~~~~~~~~~^~
+E:\桌面\Open_World_Game\GameProto.cpp(81,35): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(81,35): warning :      pret->push_back((length >> 0) & 0xff);
+E:\桌面\Open_World_Game\GameProto.cpp(81,35): warning :                      ~~~~~~~~~~~~~~^~~~~~
+E:\桌面\Open_World_Game\GameProto.cpp(82,35): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(82,35): warning :      pret->push_back((length >> 8) & 0xff);
+E:\桌面\Open_World_Game\GameProto.cpp(82,35): warning :                      ~~~~~~~~~~~~~~^~~~~~
+E:\桌面\Open_World_Game\GameProto.cpp(83,36): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(83,36): warning :      pret->push_back((length >> 16) & 0xff);
+E:\桌面\Open_World_Game\GameProto.cpp(83,36): warning :                      ~~~~~~~~~~~~~~~^~~~~~
+E:\桌面\Open_World_Game\GameProto.cpp(84,36): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(84,36): warning :      pret->push_back((length >> 24) & 0xff);
+E:\桌面\Open_World_Game\GameProto.cpp(84,36): warning :                      ~~~~~~~~~~~~~~~^~~~~~
+E:\桌面\Open_World_Game\GameProto.cpp(85,31): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(85,31): warning :      pret->push_back((id >> 0) & 0xff);
+E:\桌面\Open_World_Game\GameProto.cpp(85,31): warning :                      ~~~~~~~~~~^~~~~~
+E:\桌面\Open_World_Game\GameProto.cpp(86,31): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(86,31): warning :      pret->push_back((id >> 8) & 0xff);
+E:\桌面\Open_World_Game\GameProto.cpp(86,31): warning :                      ~~~~~~~~~~^~~~~~
+E:\桌面\Open_World_Game\GameProto.cpp(87,32): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(87,32): warning :      pret->push_back((id >> 16) & 0xff);
+E:\桌面\Open_World_Game\GameProto.cpp(87,32): warning :                      ~~~~~~~~~~~^~~~~~
+E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning : conversion to ‘char’ from ‘int’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning :      pret->push_back((id >> 24) & 0xff);
+E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning :                      ~~~~~~~~~~~^~~~~~
+  GameRole.cpp
+  main.cpp
+  msg.pb.cc
+  正在链接对象
+  Open_World_Game.vcxproj -> E:\桌面\Open_World_Game\bin\x64\Debug\Open_World_Game.out

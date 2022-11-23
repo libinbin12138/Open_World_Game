@@ -92,6 +92,45 @@ GameRole::~GameRole()
 {
 }
 
+void GameRole::ProcChat(std::string _content)
+{
+        /*std::cout << "接收到的消息id是" << single->enMsgType << std::endl;
+        std::cout << single->pMsg->Utf8DebugString() << std::endl;*/
+
+        //std::string content = dynamic_cast<pb::Talk*>(single->pMsg)->content();
+        auto role_List = ZinxKernel::Zinx_GetAllRole();
+
+        for (auto singleRole : role_List)
+        {
+            auto chatMsg = CreateTalkBroadCast(_content);//不懂这里为啥循环里外不一样。。。
+           // printf("1address of pointer is: 0x%0X\n", &chatMsg);
+
+            auto curRole = dynamic_cast<GameRole*>(singleRole);
+            ZinxKernel::Zinx_SendOut(*chatMsg, *(curRole->Ro_proto));
+           // printf("3address of pointer is: 0x%0X\n", &chatMsg);
+        }
+}
+
+void GameRole::ProcMovement(float _x, float _y, float _z, float _v)
+{      
+        auto role_List = world.GetRoundPlayer(this);
+        for (auto singleRole : role_List)
+        {
+            pb::BroadCast* NewPosition = new pb::BroadCast();
+            NewPosition->set_pid(Pid);
+            NewPosition->set_username(Player_Name);
+            NewPosition->set_tp(4);
+            auto pPosition = NewPosition->mutable_p();;
+            pPosition->set_x(_x);
+            pPosition->set_y(_y);
+            pPosition->set_z(_z);
+            pPosition->set_v(_v);
+            auto curRole = dynamic_cast<GameRole*>(singleRole);
+            ZinxKernel::Zinx_SendOut(*(new GameMsg(GameMsg::MSG_TYPE_BROADCAST, NewPosition)), *(curRole->Ro_proto));
+        }
+   
+}
+
 bool GameRole::Init()
 {
     /*设置玩家ID为当前连接的fd*/
@@ -134,44 +173,18 @@ UserData* GameRole::ProcMsg(UserData& _poUserData)
     GET_REF2DATA(MultiMsg, recvMsg, _poUserData);
     for (auto single : recvMsg.m_Msg)
     {
-        if (single->enMsgType == GameMsg::MSG_TYPE_CHAT_CONTENT)
+        auto NewPos = dynamic_cast<pb::Position*>(single->pMsg);
+        switch (single->enMsgType)
         {
-            std::cout << "接收到的消息id是" << single->enMsgType << std::endl;
-            std::cout << single->pMsg->Utf8DebugString() << std::endl;
-
-            std::string content = dynamic_cast<pb::Talk*>(single->pMsg)->content();
-            auto role_List = ZinxKernel::Zinx_GetAllRole();
-           
-            for (auto singleRole : role_List)
-            {
-                auto chatMsg = CreateTalkBroadCast(content);//不懂这里为啥循环里外不一样。。。
-                printf("1address of pointer is: 0x%0X\n", &chatMsg);
-
-                auto curRole = dynamic_cast<GameRole*>(singleRole);
-                ZinxKernel::Zinx_SendOut(*chatMsg, *(curRole->Ro_proto));
-                printf("3address of pointer is: 0x%0X\n", &chatMsg);
-            }
-
-        }
-        if (single->enMsgType == GameMsg::MSG_TYPE_NEW_POSTION)
-        {          
-            auto newpos = dynamic_cast<pb::Position*>(single->pMsg);
-            auto role_List = world.GetRoundPlayer(this);
-            for (auto singleRole : role_List)
-            {
-                pb::BroadCast* NewPosition = new pb::BroadCast();
-                NewPosition->set_pid(Pid);
-                NewPosition->set_username(Player_Name);
-                NewPosition->set_tp(4);
-                auto pPosition = NewPosition->mutable_p();;
-                pPosition->set_x(newpos->x());
-                pPosition->set_y(newpos->y());
-                pPosition->set_z(newpos->z());
-                pPosition->set_v(newpos->v());
-                auto curRole = dynamic_cast<GameRole*>(singleRole);
-                ZinxKernel::Zinx_SendOut(*(new GameMsg(GameMsg::MSG_TYPE_BROADCAST, NewPosition)), *(curRole->Ro_proto));
-            }
-        }
+        case GameMsg::MSG_TYPE_CHAT_CONTENT:
+            ProcChat(dynamic_cast<pb::Talk*>(single->pMsg)->content());
+        break;       
+        case GameMsg::MSG_TYPE_NEW_POSTION:
+            ProcMovement(NewPos->x(), NewPos->y(), NewPos->z(), NewPos->v());
+        break;
+        default:
+            break;
+       }
     }
 
     //测试proto处理的数据是否发给role

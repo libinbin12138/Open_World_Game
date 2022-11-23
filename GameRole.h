@@ -27,6 +27,8 @@ public:
 
     GameProto* Ro_proto = NULL;
 
+    void ProcChat(std::string _content);
+    void ProcMovement(float _x, float _y, float _z, float _v);
     // Í¨¹ý Irole ¼Ì³Ð
     virtual bool Init() override;
     virtual UserData* ProcMsg(UserData& _poUserData) override;

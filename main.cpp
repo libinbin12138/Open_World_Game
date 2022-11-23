@@ -4,6 +4,8 @@
 #include"GameMsg.h"
 #include"msg.pb.h"
 #include"AOIWorld.h"
+#include<random>
+
 using namespace std;
 
 class myPlayer :public Player
@@ -67,11 +69,11 @@ void test_Player()
 	}
 
 }
+static std::default_random_engine random_engine(time(NULL));
 int main()
 {
 	//test_Player();
 	//test_Protobuf();
-
 	ZinxKernel::ZinxKernelInit();
 	ZinxKernel::Zinx_Add_Channel(*(new ZinxTCPListen(8989,new Game_ChanFact())));
 	ZinxKernel::Zinx_Run();

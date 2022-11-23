@@ -4,6 +4,9 @@
 #include"msg.pb.h"
 #include"GameChannel.h"
 #include <iostream>
+#include<algorithm>
+#include<iostream>
+#include<random>
 
 static AOIWorld world(0,400,0,400,20,20);
 
@@ -81,10 +84,12 @@ GameMsg* GameRole::CreateTalkBroadCast(std::string _content)
     return ChatMsg;
 }
 
+static std::default_random_engine random_engine(time(NULL));
+
 GameRole::GameRole()
 {
-    x = 100; 
-    z = 100;
+    x = 100+ random_engine() % 50;
+    z = 100 + random_engine() % 50;
     Player_Name ="Tom";
 }
 
@@ -113,6 +118,34 @@ void GameRole::ProcChat(std::string _content)
 
 void GameRole::ProcMovement(float _x, float _y, float _z, float _v)
 {      
+    auto Plist_old = world.GetRoundPlayer(this);
+    world.DelPlayers(this);
+    x = _x;
+    y = _y;
+    z = _z;
+    v = _v;
+    world.AddPlayerS(this);
+    auto Plist_New = world.GetRoundPlayer(this);
+
+    //遍历新的，不属于旧的则视野出现
+    for (auto single_new_player : Plist_New)
+    {
+        if (Plist_old.end() == find(Plist_old.begin(), Plist_old.end(), single_new_player))
+            //遍历到旧视野的末，是新出现的
+        {
+            ViewAppear(dynamic_cast<GameRole*>(single_new_player));
+        }
+    }
+    for (auto single_old_player : Plist_old)
+    {
+        if (Plist_New.end() == find(Plist_New.begin(), Plist_New.end(), single_old_player))
+            //遍历到新视野的末，是旧人物
+        {
+            ViewLost(dynamic_cast<GameRole*>(single_old_player));
+        }
+    }
+
+
         auto role_List = world.GetRoundPlayer(this);
         for (auto singleRole : role_List)
         {
@@ -129,6 +162,28 @@ void GameRole::ProcMovement(float _x, float _y, float _z, float _v)
             ZinxKernel::Zinx_SendOut(*(new GameMsg(GameMsg::MSG_TYPE_BROADCAST, NewPosition)), *(curRole->Ro_proto));
         }
    
+}
+
+void GameRole::ViewAppear(GameRole* player)
+{
+    //向新玩家发送自己的信息
+    GameMsg* pMsg =CreateSelfInfo();
+    ZinxKernel::Zinx_SendOut(*pMsg,*( player->Ro_proto));
+
+  //向自己发送新玩家的信息
+    pMsg = player->CreateSelfInfo();
+    ZinxKernel::Zinx_SendOut(*pMsg, *Ro_proto);
+}
+
+void GameRole::ViewLost(GameRole* player)
+{
+    //向旧玩家发送自己下线的信息
+    GameMsg* pMsg = CreateIDNameLogoff();
+    ZinxKernel::Zinx_SendOut(*pMsg, *(player->Ro_proto));
+
+    //向自己发送旧玩家下线的信息
+    pMsg = player->CreateIDNameLogoff();
+    ZinxKernel::Zinx_SendOut(*pMsg, *Ro_proto);
 }
 
 bool GameRole::Init()

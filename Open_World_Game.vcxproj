@@ -94,6 +94,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions>-lpthread</AdditionalOptions>
+      <CLanguageStandard>c11</CLanguageStandard>
+      <CppLanguageStandard>gnu++11</CppLanguageStandard>
     </ClCompile>
     <Link>
       <LibraryDependencies>zinx;protobuf;pthread;%(LibraryDependencies)</LibraryDependencies>

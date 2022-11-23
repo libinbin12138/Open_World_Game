@@ -29,6 +29,9 @@ public:
 
     void ProcChat(std::string _content);
     void ProcMovement(float _x, float _y, float _z, float _v);
+
+    void ViewAppear(GameRole* player);
+    void ViewLost(GameRole* player);
     // Í¨¹ý Irole ¼Ì³Ð
     virtual bool Init() override;
     virtual UserData* ProcMsg(UserData& _poUserData) override;

@@ -43,6 +43,12 @@ E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning : conversion to ‘char�
 E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning :      pret->push_back((id >> 24) & 0xff);
 E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning :                      ~~~~~~~~~~~^~~~~~
   GameRole.cpp
+E:\桌面\Open_World_Game\GameRole.cpp(91,12): warning : conversion to ‘float’ from ‘std::linear_congruential_engine<long unsigned int, 16807, 0, 2147483647>::result_type {aka long unsigned int}’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameRole.cpp(91,12): warning :      x = 100+ random_engine() % 50;
+E:\桌面\Open_World_Game\GameRole.cpp(91,12): warning :          ~~~^~~~~~~~~~~~~~~~~~~~~~
+E:\桌面\Open_World_Game\GameRole.cpp(92,13): warning : conversion to ‘float’ from ‘std::linear_congruential_engine<long unsigned int, 16807, 0, 2147483647>::result_type {aka long unsigned int}’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameRole.cpp(92,13): warning :      z = 100 + random_engine() % 50;
+E:\桌面\Open_World_Game\GameRole.cpp(92,13): warning :          ~~~~^~~~~~~~~~~~~~~~~~~~~~
   main.cpp
   msg.pb.cc
   正在链接对象

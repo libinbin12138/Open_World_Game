@@ -5,7 +5,7 @@
 #include"msg.pb.h"
 #include"AOIWorld.h"
 #include<random>
-
+#include"./Timer/Timer_Channel.h"
 using namespace std;
 
 class myPlayer :public Player
@@ -76,6 +76,7 @@ int main()
 	//test_Protobuf();
 	ZinxKernel::ZinxKernelInit();
 	ZinxKernel::Zinx_Add_Channel(*(new ZinxTCPListen(8989,new Game_ChanFact())));
+	ZinxKernel::Zinx_Add_Channel(*(new Timer_Channel()));
 	ZinxKernel::Zinx_Run();
 	ZinxKernel::ZinxKernelFini();
 

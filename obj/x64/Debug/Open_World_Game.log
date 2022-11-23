@@ -43,13 +43,21 @@ E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning : conversion to ‘char�
 E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning :      pret->push_back((id >> 24) & 0xff);
 E:\桌面\Open_World_Game\GameProto.cpp(88,32): warning :                      ~~~~~~~~~~~^~~~~~
   GameRole.cpp
-E:\桌面\Open_World_Game\GameRole.cpp(91,12): warning : conversion to ‘float’ from ‘std::linear_congruential_engine<long unsigned int, 16807, 0, 2147483647>::result_type {aka long unsigned int}’ may alter its value [-Wconversion]
-E:\桌面\Open_World_Game\GameRole.cpp(91,12): warning :      x = 100+ random_engine() % 50;
-E:\桌面\Open_World_Game\GameRole.cpp(91,12): warning :          ~~~^~~~~~~~~~~~~~~~~~~~~~
-E:\桌面\Open_World_Game\GameRole.cpp(92,13): warning : conversion to ‘float’ from ‘std::linear_congruential_engine<long unsigned int, 16807, 0, 2147483647>::result_type {aka long unsigned int}’ may alter its value [-Wconversion]
-E:\桌面\Open_World_Game\GameRole.cpp(92,13): warning :      z = 100 + random_engine() % 50;
-E:\桌面\Open_World_Game\GameRole.cpp(92,13): warning :          ~~~~^~~~~~~~~~~~~~~~~~~~~~
+E:\桌面\Open_World_Game\GameRole.cpp(106,12): warning : conversion to ‘float’ from ‘std::linear_congruential_engine<long unsigned int, 16807, 0, 2147483647>::result_type {aka long unsigned int}’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameRole.cpp(106,12): warning :      x = 100+ random_engine() % 50;
+E:\桌面\Open_World_Game\GameRole.cpp(106,12): warning :          ~~~^~~~~~~~~~~~~~~~~~~~~~
+E:\桌面\Open_World_Game\GameRole.cpp(107,13): warning : conversion to ‘float’ from ‘std::linear_congruential_engine<long unsigned int, 16807, 0, 2147483647>::result_type {aka long unsigned int}’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\GameRole.cpp(107,13): warning :      z = 100 + random_engine() % 50;
+E:\桌面\Open_World_Game\GameRole.cpp(107,13): warning :          ~~~~^~~~~~~~~~~~~~~~~~~~~~
   main.cpp
   msg.pb.cc
+  TimeOutPrc.cpp
+E:\桌面\Open_World_Game\Timer\TimeOutPrc.cpp(110,16): warning : suggest parentheses around assignment used as truth value [-Wparentheses]
+E:\桌面\Open_World_Game\Timer\TimeOutPrc.cpp(110,16): warning :     if (cur_task= _prc)
+E:\桌面\Open_World_Game\Timer\TimeOutPrc.cpp(110,16): warning :         ~~~~~~~~^~~~~~
+  Timer_Channel.cpp
+E:\桌面\Open_World_Game\Timer\Timer_Channel.cpp(29,17): warning : conversion to ‘int’ from ‘ssize_t {aka long int}’ may alter its value [-Wconversion]
+E:\桌面\Open_World_Game\Timer\Timer_Channel.cpp(29,17): warning :      int len=read(time_fd, buf, sizeof(buf));
+E:\桌面\Open_World_Game\Timer\Timer_Channel.cpp(29,17): warning :              ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
   正在链接对象
   Open_World_Game.vcxproj -> E:\桌面\Open_World_Game\bin\x64\Debug\Open_World_Game.out

@@ -7,6 +7,21 @@
 #include<algorithm>
 #include<iostream>
 #include<random>
+#include"./Timer/TimeOutPrc.h"
+class ExitTask :public TimeOutPrc//定时退出
+{
+    // 通过 TimeOutPrc 继承
+    virtual void prc() override
+    {
+
+        ZinxKernel::Zinx_Exit();
+    }
+    virtual int gettimer() override
+    {
+        return 20;
+    }
+};
+static ExitTask exitTask;//定时退出
 
 static AOIWorld world(0,400,0,400,20,20);
 
@@ -120,6 +135,7 @@ void GameRole::ProcMovement(float _x, float _y, float _z, float _v)
 {      
     auto Plist_old = world.GetRoundPlayer(this);
     world.DelPlayers(this);
+
     x = _x;
     y = _y;
     z = _z;
@@ -166,28 +182,34 @@ void GameRole::ProcMovement(float _x, float _y, float _z, float _v)
 
 void GameRole::ViewAppear(GameRole* player)
 {
+    //向自己发送新玩家的信息
+    auto  pMsg = player->CreateSelfInfo();
+    ZinxKernel::Zinx_SendOut(*pMsg, *Ro_proto);
+
     //向新玩家发送自己的信息
-    GameMsg* pMsg =CreateSelfInfo();
+    pMsg =CreateSelfInfo();
     ZinxKernel::Zinx_SendOut(*pMsg,*( player->Ro_proto));
 
-  //向自己发送新玩家的信息
-    pMsg = player->CreateSelfInfo();
-    ZinxKernel::Zinx_SendOut(*pMsg, *Ro_proto);
+  
 }
 
 void GameRole::ViewLost(GameRole* player)
 {
-    //向旧玩家发送自己下线的信息
-    GameMsg* pMsg = CreateIDNameLogoff();
-    ZinxKernel::Zinx_SendOut(*pMsg, *(player->Ro_proto));
-
     //向自己发送旧玩家下线的信息
-    pMsg = player->CreateIDNameLogoff();
+    auto pMsg = player->CreateIDNameLogoff();
     ZinxKernel::Zinx_SendOut(*pMsg, *Ro_proto);
+
+    //向旧玩家发送自己下线的信息
+    pMsg = CreateIDNameLogoff();
+    ZinxKernel::Zinx_SendOut(*pMsg, *(player->Ro_proto));
 }
 
 bool GameRole::Init()
 {
+    if (ZinxKernel::Zinx_GetAllRole().size() <= 0)
+    {
+        TimeOutMsg::getInstance().delTimeOutPrc(&exitTask);
+    }
     /*设置玩家ID为当前连接的fd*/
     //由getfd来实现id的唯一性
     //不能在构造函数中初始话，因为那里还没有连接Ro_proto        
@@ -262,6 +284,12 @@ void GameRole::Fini()
         ZinxKernel::Zinx_SendOut(*pMsg, *(curPlayer->Ro_proto));
     }
     world.DelPlayers(this);
+
+    if (ZinxKernel::Zinx_GetAllRole().size() <=1)
+    {
+        TimeOutMsg::getInstance().addTimeOutPrc(&exitTask);
+    }
+
 }
 
 int GameRole::getX()

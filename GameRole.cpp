@@ -3,12 +3,15 @@
 #include"GameProto.h"
 #include"msg.pb.h"
 #include"GameChannel.h"
-#include <iostream>
 #include<algorithm>
 #include<iostream>
+#include<fstream>
+//#include<ostream>
 #include<random>
 #include"./Timer/TimeOutPrc.h"
 #include"RandomName.h"
+#include <hiredis/hiredis.h>
+
 class ExitTask :public TimeOutPrc//定时退出
 {
     // 通过 TimeOutPrc 继承
@@ -245,6 +248,23 @@ bool GameRole::Init()
 
     }
 
+    //记录当前姓名到redis的game_name
+       //1 连接redis
+    auto context = redisConnect("127.0.0.1", 6379);
+    //2 发送lpush命令
+    if (NULL != context)
+    {
+        freeReplyObject(redisCommand(context, "lpush game_name %s", Player_Name.c_str()));
+        redisFree(context);
+    }
+    //记录玩家姓名
+    /* ofstream ofs("/tmp/player", ios::app);
+    if (!ofs.is_open())
+    {
+        perror("open /tmp/player err");
+    }
+    ofs << Player_Name << endl;
+    ofs.close();*/
 
     return returnValue;
 }
@@ -268,6 +288,7 @@ UserData* GameRole::ProcMsg(UserData& _poUserData)
        }
     }
 
+   
     //测试proto处理的数据是否发给role
    /* GET_REF2DATA(MultiMsg, Mesg, _poUserData);
     for (auto task : Mesg.m_Msg)
@@ -289,13 +310,44 @@ void GameRole::Fini()
     }
     world.DelPlayers(this);
 
-    if (ZinxKernel::Zinx_GetAllRole().size() <=1)
+    if (ZinxKernel::Zinx_GetAllRole().size() <=0)
     {
         TimeOutMsg::getInstance().addTimeOutPrc(&exitTask);
     }
 
+    auto content = redisConnect("127.0.0.1", 6379);
+    if (content != NULL)
+    {
+        freeReplyObject(redisCommand(content, "lrem game_name 1 %s", Player_Name.c_str()));
+        redisFree(content);
+    }
+   
 }
+void Del_readname(GameRole *p)
+{
+    ifstream ifs("/tmp/player");
+    if (!ifs.is_open())
+    {
+        perror("open /tmp/player err");
+    }
+    std::string tmp_name;
+    std::list<std::string>tmp_name_list;
+    while (getline(ifs, tmp_name))
+    {
+        tmp_name_list.push_back(tmp_name);
+    }
+    ifs.close();
 
+    ofstream ofs("/tmp/player");
+    for (auto single : tmp_name_list)
+    {
+        if (0)//single!= p->Player_Name
+        {
+            ofs << single << endl;
+        }
+    }
+    ofs.close();
+}
 int GameRole::getX()
 {
     return (int)x;

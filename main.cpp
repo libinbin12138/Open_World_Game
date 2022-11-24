@@ -10,6 +10,7 @@
 using namespace std;
 
 extern RandomName randname;
+static std::default_random_engine random_engine(time(NULL));
 class myPlayer :public Player
 {
 	int x;
@@ -71,11 +72,64 @@ void test_Player()
 	}
 
 }
-static std::default_random_engine random_engine(time(NULL));
+
+void daemonlize()
+{
+	//1 fork
+	pid_t pid = fork();
+	if (pid < 0)
+	{
+		exit(-1);
+	}
+    //2 父进程退出
+	if (pid > 0)
+	{
+		exit(0);
+	}
+	//3 子进程 设置回话ID
+	else if (pid == 0)
+	{
+		setsid();
+	}
+	//4 子进程 设置执行路径
+	int Null_fd = open("/dev/null",O_RDWR);
+	//5 子进程 重定向3个文件描述到/dev/null
+	if (Null_fd >= 0)
+	{
+		dup2(Null_fd, 0);
+		dup2(Null_fd, 1);
+		dup2(Null_fd, 2);
+		close(Null_fd);
+	}	
+	//6.设置进程监控
+	while (1)
+	{
+		pid_t pid = fork();
+		if (0 > pid)
+		{
+			exit(-1);
+		}
+		else if (pid > 0)
+		{
+			int status = 0;
+			wait(&status);
+			if (status == 0)
+			{
+				exit(0);
+			}
+		}
+		else 
+		{
+			break;
+
+		}
+	}
+}
 int main()
 {
 	//test_Player();
 	//test_Protobuf();
+	daemonlize();
 	randname.LodaFile();
 	ZinxKernel::ZinxKernelInit();
 	ZinxKernel::Zinx_Add_Channel(*(new ZinxTCPListen(8989,new Game_ChanFact())));
@@ -83,4 +137,5 @@ int main()
 	ZinxKernel::Zinx_Run();
 	ZinxKernel::ZinxKernelFini();
 
+	return 0;
 }

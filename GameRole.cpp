@@ -8,6 +8,7 @@
 #include<iostream>
 #include<random>
 #include"./Timer/TimeOutPrc.h"
+#include"RandomName.h"
 class ExitTask :public TimeOutPrc//定时退出
 {
     // 通过 TimeOutPrc 继承
@@ -24,6 +25,8 @@ class ExitTask :public TimeOutPrc//定时退出
 static ExitTask exitTask;//定时退出
 
 static AOIWorld world(0,400,0,400,20,20);
+
+RandomName randname;
 
 GameMsg* GameRole::CreateIDNameLogin()
 {
@@ -105,11 +108,12 @@ GameRole::GameRole()
 {
     x = 100+ random_engine() % 50;
     z = 100 + random_engine() % 50;
-    Player_Name ="Tom";
+    Player_Name = randname.GetName();
 }
 
 GameRole::~GameRole()
 {
+    randname.ReleaseName(Player_Name);
 }
 
 void GameRole::ProcChat(std::string _content)

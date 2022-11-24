@@ -6,8 +6,10 @@
 #include"AOIWorld.h"
 #include<random>
 #include"./Timer/Timer_Channel.h"
+#include"RandomName.h"
 using namespace std;
 
+extern RandomName randname;
 class myPlayer :public Player
 {
 	int x;
@@ -74,6 +76,7 @@ int main()
 {
 	//test_Player();
 	//test_Protobuf();
+	randname.LodaFile();
 	ZinxKernel::ZinxKernelInit();
 	ZinxKernel::Zinx_Add_Channel(*(new ZinxTCPListen(8989,new Game_ChanFact())));
 	ZinxKernel::Zinx_Add_Channel(*(new Timer_Channel()));

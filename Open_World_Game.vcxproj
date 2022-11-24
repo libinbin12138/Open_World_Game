@@ -82,6 +82,7 @@
     <ClCompile Include="GameRole.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="msg.pb.cc" />
+    <ClCompile Include="RandomName.cpp" />
     <ClCompile Include="Timer\TimeOutPrc.cpp" />
     <ClCompile Include="Timer\Timer_Channel.cpp" />
   </ItemGroup>
@@ -92,6 +93,7 @@
     <ClInclude Include="GameProto.h" />
     <ClInclude Include="GameRole.h" />
     <ClInclude Include="msg.pb.h" />
+    <ClInclude Include="RandomName.h" />
     <ClInclude Include="Timer\TimeOutPrc.h" />
     <ClInclude Include="Timer\Timer_Channel.h" />
   </ItemGroup>
